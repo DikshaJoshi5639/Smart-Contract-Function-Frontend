@@ -7,6 +7,7 @@ export default function HomePage() {
   const [account, setAccount] = useState(undefined);
   const [smartContract, setSmartContract] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
+  const [loading, setLoading] = useState(true);
 
   const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const ATMABI = atm_abi.abi;
@@ -27,7 +28,7 @@ export default function HomePage() {
     setAccount(accounts[0]);
   };
 
-  const initializeSmartContract = () => {
+  const initializeSmartContract = async () => {
     if (ethWallet && contractAddress && ATMABI) {
       const provider = new ethers.providers.Web3Provider(ethWallet);
       const signer = provider.getSigner();
@@ -40,6 +41,7 @@ export default function HomePage() {
     if (smartContract) {
       const balance = await smartContract.getBalance();
       setBalance(balance);
+      setLoading(false); // Set loading to false once balance is fetched
     }
   };
 
@@ -59,41 +61,43 @@ export default function HomePage() {
     }
   };
 
+  useEffect(() => {
+    getWallet();
+  }, []);
 
-  const initUser = () => {
+  useEffect(() => {
+    if (ethWallet && account && !smartContract) {
+      initializeSmartContract();
+    }
+    if (smartContract && balance === undefined) {
+      getBalance();
+    }
+  }, [ethWallet, account, smartContract, balance]);
+
+  const renderContent = () => {
     if (!ethWallet) {
       return <p>Please install Metamask in order to use this ATM.</p>;
     }
-
     if (!account) {
       return <button onClick={connectAccount}>Please connect your Metamask wallet</button>;
     }
-
-    if (!smartContract) {
-      initializeSmartContract();
+    if (loading) {
+      return <p>Loading...</p>;
     }
-
-    if (balance === undefined) {
-      getBalance();
-    }
-
     return (
       <div>
         <p>Your Account: {account}</p>
-        <p>Your Balance: {balance}</p>
+        <p>Your Balance: {balance && balance.toString()}</p>
         <button onClick={deposit}>Deposit 1 ETH</button>
         <button onClick={withdraw}>Withdraw 1 ETH</button>
-        <button onClick={redeem}>Redeem Funds</button>
       </div>
     );
   };
 
-  useEffect(() => { getWallet(); }, []);
-
   return (
     <main className="container">
       <header><h1>Welcome to Metacrafters ATM!</h1></header>
-      {initUser()}
+      {renderContent()}
       <style jsx>{`
         * {
           margin: 0;
