@@ -11,14 +11,16 @@ contract SmartContract{
     event deposite(uint deposit_val,uint balance);
     event withdraw(uint withdraw_val,uint balance); 
 
-    
+    constructor(uint initval) {
+        Balance = initval;
+        WalletAddress = payable(msg.sender);
+    }
 
     function getBalance() public view returns(uint){
         return Balance;
     }
 
     function DisplayAddress() public payable {
-        WalletAddress = payable(msg.sender);
         emit showAddress(WalletAddress);
     }
     
