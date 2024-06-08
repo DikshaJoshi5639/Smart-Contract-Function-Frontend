@@ -102,7 +102,7 @@ export default function HomePage() {
         .container {
           width: 100vw;
           height: 100vh;
-          background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.dreamstime.com%2Fphotos-images%2Fsmart-contract.html&psig=AOvVaw3umwePIgcleAiqNIEKKfJC&ust=1717937041335000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCIDOj7SEzIYDFQAAAAAdAAAAABAE");
+          background-image: url("https://thumbs.dreamstime.com/b/smart-contract-concept-person-using-smartphone-white-166298479.jpg");
           background-position: center;
           background-repeat: no-repeat;
           background-size: cover;
