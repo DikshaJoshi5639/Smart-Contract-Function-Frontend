@@ -29,7 +29,7 @@ contract SmartContract{
         emit deposite(deopsite_val, Balance);
     }
     
-    function Withdraw(uint256 withdraw_val) public payable {
+    function Withdraw(uint withdraw_val) public payable {
     require(Balance >= withdraw_val, "Insufficient balance");
     
     Balance -= withdraw_val;
