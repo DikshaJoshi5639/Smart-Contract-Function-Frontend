@@ -90,17 +90,31 @@ export default function Homepage() {
     };
 
     const transfer = async () => {
-        try {
-            if (mysmartcontract) {
-                let tx = await mysmartcontract.Transfer(recipientAddress, ethers.utils.parseEther(amount.toString()));
-                await tx.wait();
-                console.log(`Transferred ${amount} ETH to ${recipientAddress}`);
-                getBalance();
-            }
-        } catch (error) {
-            console.error("Error while transferring:", error.message);
-        }
-    };
+      try {
+          if (ethWallet && recipientAddress && amount > 0) {
+              const provider = new ethers.providers.Web3Provider(window.ethereum);
+              const signer = provider.getSigner();
+              
+              // Convert amount to wei (smallest unit of Ether)
+              const weiAmount = ethers.utils.parseEther(amount.toString());
+  
+              // Send transaction to transfer Ether
+              const tx = await signer.sendTransaction({
+                  to: recipientAddress,
+                  value: weiAmount
+              });
+  
+              await tx.wait(); // Wait for transaction to be mined
+              console.log(`Transferred ${amount} ETH to ${recipientAddress}`);
+              getBalance(); // Refresh balance
+          } else {
+              console.error("Recipient address or amount invalid.");
+          }
+      } catch (error) {
+          console.error("Error while transferring:", error.message);
+      }
+  };
+  
 
     const accountHandler = async (accounts) => {
         if (accounts.length > 0) {
@@ -155,13 +169,15 @@ export default function Homepage() {
                     <h3><button onClick={deposit}>Commit 1 ETH</button></h3>
                     <h3><button onClick={withdraw}>Retrieve 1 ETH</button></h3>
                     <h3><button onClick={redeem}>Redeem</button></h3>
+                    <h3><button onClick={transfer}>Transfer ETH</button></h3>
+
                     <form onSubmit={(e) => {
                         e.preventDefault();
                         transfer();
                     }}>
                         <input type="text" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} placeholder="Recipient Address" />
                         <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount" />
-                        <button type="submit">Transfer</button>
+                        
                     </form>
                     <p>Redeemed Amount : {ethers.utils.formatEther(redeemedAmount)} ETH</p>
                 </div>
